@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy · Open Time</title>
+<meta name="description" content="How Open Time handles your data: only your email and what you type in, visible only to you. No ads, tracking or analytics.">
+<link rel="canonical" href="https://opentime.work/privacy/">
+<link rel="icon" type="image/png" sizes="192x192" href="/app/icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF0EE;--paper:#FFFFFF;--ink:#1C2427;--muted:#5F6B67;--line:#D6DCD9;--accent:#3564D6;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121719;--paper:#1A2023;--ink:#E4EAE8;--muted:#9AA6A2;--line:#2A3337;--accent:#86A4F2}}
+:root[data-theme="dark"]{--bg:#121719;--paper:#1A2023;--ink:#E4EAE8;--muted:#9AA6A2;--line:#2A3337;--accent:#86A4F2}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px 64px}
+header{display:flex;align-items:center;gap:10px;padding:22px 0 8px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px;color:var(--ink);text-decoration:none}
+.logo img{width:28px;height:28px;border-radius:8px}
+header .spacer{flex:1}
+header .app{background:var(--accent);color:#fff;text-decoration:none;font-weight:600;font-size:14.5px;padding:8px 16px;border-radius:999px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) header .app{color:#101624}}
+h1{font-size:clamp(32px,5vw,44px);letter-spacing:-.03em;line-height:1.1;margin:36px 0 6px}
+.date{color:var(--muted);font-size:15px;margin:0 0 26px}
+.summary{background:var(--paper);border-radius:18px;padding:20px 24px;margin:0 0 30px}
+.summary p{margin:0}
+h2{font-size:21px;letter-spacing:-.01em;margin:34px 0 8px}
+p,li{color:var(--ink)}
+ul{padding-left:22px}
+li{margin:6px 0}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--line);margin-top:48px;padding-top:20px;display:flex;gap:18px;font-size:14.5px}
+footer a{color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><a class="logo" href="/"><img src="/app/icons/icon-192.png" alt="" width="28" height="28">Open Time</a><span class="spacer"></span><a class="app" href="/app/">Open the app</a></header>
+<main>
+<h1>Privacy</h1>
+<p class="date">Last updated September 29, 2026</p>
+<div class="summary"><p><b>The short version:</b> Open Time stores only what it needs to work: your email if you make an account, and the tasks and schedule you type in. Nobody else can see your data. There are no ads, no tracking and no analytics, and your data is never sold or shared. You can export it or delete it at any time.</p></div>
+
+<h2>If you use Open Time without an account</h2>
+<p>Everything you enter stays in your browser's storage on that device. It is never sent to our database. If you clear your browser data, it's gone, so export a backup from Settings if you want to keep it.</p>
+
+<h2>If you create an account</h2>
+<p>We store:</p>
+<ul>
+  <li><b>Your email address and password.</b> The password is stored in a scrambled (hashed) form by our database provider. We can't read it.</li>
+  <li><b>Your Open Time data:</b> tasks, categories, time estimates, closed time (like class names and times), plans, and settings. If you set a location for sunset times, it is rounded to about a kilometer before it's saved.</li>
+</ul>
+<p>That's all. We don't ask for your name, phone number, contacts or precise location.</p>
+
+<h2>Who can see your data</h2>
+<p>Only you, when signed in. Database rules make sure each account can only read and change its own data. As the person who runs Open Time, I technically have administrator access to the database, but I don't look at anyone's data. The only exceptions would be fixing a technical problem you've asked for help with, or where the law requires it.</p>
+
+<h2>Services Open Time relies on</h2>
+<ul>
+  <li><b>Supabase</b> hosts the database and handles sign-in.</li>
+  <li><b>GitHub Pages</b> serves the website. Like any web host, it may briefly log visitor IP addresses for security.</li>
+  <li><b>Google Fonts</b> and <b>jsDelivr</b> deliver the typeface and one code library. Your browser contacts them when loading the page.</li>
+  <li><b>An email provider</b> sends account emails (confirmation and password reset). It sees your email address and nothing else.</li>
+</ul>
+<p>None of these receive your tasks or schedule, except Supabase, which stores them for you.</p>
+
+<h2>What Open Time doesn't do</h2>
+<ul>
+  <li>No ads, and no advertising or tracking cookies</li>
+  <li>No analytics or usage tracking</li>
+  <li>No selling, renting or sharing of your data</li>
+  <li>No marketing emails. The only emails you'll get are the ones you ask for (account confirmation and password reset).</li>
+</ul>
+
+<h2>Your choices</h2>
+<ul>
+  <li><b>Export:</b> Settings → Export backup gives you all your data as a file.</li>
+  <li><b>Delete:</b> Settings → Delete account permanently erases your account and all your data right away. It can't be undone.</li>
+  <li><b>Sign out:</b> removes your data from that device. It stays safe in your account.</li>
+</ul>
+
+<h2>Children</h2>
+<p>Open Time isn't directed at children under 13, and accounts shouldn't be created for them.</p>
+
+<h2>Changes</h2>
+<p>If this policy changes, the new version will be posted here with a new date. Big changes will be announced on the home page.</p>
+
+<h2>Contact</h2>
+<p>Questions or requests: <a href="mailto:hello@opentime.work">hello@opentime.work</a></p>
+</main>
+<footer><a href="/">Home</a><a href="/app/">App</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></footer>
+</div>
+</body>
+</html>
