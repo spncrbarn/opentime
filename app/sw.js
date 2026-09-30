@@ -1,6 +1,6 @@
 // Open Time offline helper: keeps the app itself available without internet.
 // Your data syncs through Supabase and is never stored by this file.
-const CACHE = 'open-time-v2';
+const CACHE = 'open-time-v3';
 const SHELL = ['./', './index.html', './config.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js'];
@@ -15,7 +15,7 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.hostname.endsWith('supabase.co')) return; // never cache your data or sign-in
+  if (url.hostname.endsWith('supabase.co') || url.hostname === 'challenges.cloudflare.com') return; // never cache your data, sign-in or the human check
   const sameOrigin = url.origin === self.location.origin;
   if (sameOrigin && (req.mode === 'navigate' || /\.(html|js|webmanifest)$/.test(url.pathname) || url.pathname.endsWith('/'))) {
     // network first, so updates you push to GitHub show up; fall back to the saved copy offline

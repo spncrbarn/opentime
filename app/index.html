@@ -401,6 +401,36 @@ function showWelcome(){
   setTimeout(()=>$('#wTry').focus(),30);
 }
 
+/* ---- human check (Cloudflare Turnstile) ---- */
+const TS_KEY = CFG.turnstileSiteKey || '';
+let tsLoading = null, tsWidget = null, tsToken = null;
+function loadTurnstile(){
+  if (!TS_KEY) return Promise.resolve(null);
+  if (window.turnstile) return Promise.resolve(window.turnstile);
+  if (!tsLoading) tsLoading = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    s.async = true; s.onload = () => res(window.turnstile); s.onerror = () => { tsLoading = null; rej(new Error('turnstile')); };
+    document.head.appendChild(s);
+  });
+  return tsLoading;
+}
+async function mountCaptcha(el){
+  tsToken = null; tsWidget = null;
+  if (!TS_KEY || !el) return;
+  try {
+    const ts = await loadTurnstile();
+    if (!ts || !document.body.contains(el)) return;
+    tsWidget = ts.render(el, {
+      sitekey: TS_KEY, theme: 'auto', size: 'flexible', action: 'auth',
+      callback: t => { tsToken = t; },
+      'expired-callback': () => { tsToken = null; },
+      'error-callback': () => { tsToken = null; }
+    });
+  } catch(e){ el.innerHTML = '<p class="note" style="color:var(--danger);margin:0">Couldn’t load the security check. Check your connection and reload.</p>'; }
+}
+function resetCaptcha(){ tsToken = null; try { if (window.turnstile && tsWidget != null) window.turnstile.reset(tsWidget); } catch(e){} }
+
 /* ---- sign-in screen (email + password, works inside a home-screen app) ---- */
 function showSignIn(mode){
   mode = mode || 'in';
@@ -418,6 +448,7 @@ function showSignIn(mode){
     <p class="note" id="siNote">${notes[mode]}</p>
     ${mode!=='reset' ? `<div class="field"><label for="siEmail">Email</label><input id="siEmail" type="email" autocomplete="email" inputmode="email" value="${esc(CFG.email||'')}"></div>` : ''}
     ${mode!=='forgot' ? `<div class="field"><label for="siPw">Password</label><input id="siPw" type="password" autocomplete="${mode==='in'?'current-password':'new-password'}" minlength="8"></div>` : ''}
+    ${mode!=='reset' && TS_KEY ? '<div id="siCaptcha" style="min-height:65px;margin:4px 0 6px"></div>' : ''}
     <p class="note" id="siErr" style="color:var(--danger)" hidden></p>
     <div class="ctl" style="justify-content:flex-start;margin-top:8px"><button class="btn primary" id="siGo">${btn[mode]}</button>${mode==='reset'?'':'<button class="btn ghost" id="siSkip">Not now</button>'}</div>
     <p class="note" style="margin-top:18px">
@@ -433,20 +464,26 @@ function showSignIn(mode){
     const password = $('#siPw') ? $('#siPw').value : '';
     if (mode !== 'reset' && !email) return err('Enter your email.');
     if (mode !== 'forgot' && password.length < 8) return err('Passwords need at least 8 characters.');
+    const needsCheck = TS_KEY && mode !== 'reset';
+    if (needsCheck && !tsToken) return err('One moment, the security check is still finishing. Try again in a second.');
+    const captchaToken = needsCheck ? tsToken : undefined;
     $('#siGo').disabled = true;
     let res;
     try {
-      if (mode === 'in') res = await sb.auth.signInWithPassword({ email, password });
-      else if (mode === 'up') res = await sb.auth.signUp({ email, password, options:{ emailRedirectTo: location.origin + location.pathname } });
-      else if (mode === 'forgot') res = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+      if (mode === 'in') res = await sb.auth.signInWithPassword({ email, password, options:{ captchaToken } });
+      else if (mode === 'up') res = await sb.auth.signUp({ email, password, options:{ emailRedirectTo: location.origin + location.pathname, captchaToken } });
+      else if (mode === 'forgot') res = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname, captchaToken });
       else res = await sb.auth.updateUser({ password });
     } catch(e){ res = { error:{ message:'Couldn’t reach the server. Check your connection and try again.' } }; }
     $('#siGo').disabled = false;
+    if (needsCheck) resetCaptcha(); // each check can only be used once
     const { data, error } = res;
     if (error){
       const m = /invalid login/i.test(error.message) ? 'That email and password don’t match.' :
                 /not confirmed/i.test(error.message) ? 'Confirm your email first: open the link Supabase sent you, then sign in here.' :
-                /signups? not allowed|disabled/i.test(error.message) ? 'New accounts are turned off for this app.' : error.message;
+                /signups? not allowed|disabled/i.test(error.message) ? 'New accounts are turned off for this app.' :
+                /captcha/i.test(error.message) ? 'The security check didn’t go through. Wait a second and try again.' :
+                /rate limit|too many/i.test(error.message) ? 'Too many tries. Wait a few minutes and try again.' : error.message;
       return err(m);
     }
     if (mode === 'forgot'){ $('#siNote').textContent = `Check ${email} for a reset link. Open it in your browser, then come back and sign in.`; $('#siGo').hidden = true; return; }
@@ -462,6 +499,7 @@ function showSignIn(mode){
   if ($('#siForgot')) $('#siForgot').onclick = () => showSignIn('forgot');
   if ($('#siIn')) $('#siIn').onclick = () => showSignIn('in');
   setTimeout(() => { const i = $('#siEmail') || $('#siPw'); if (i) i.focus(); }, 30);
+  mountCaptcha($('#siCaptcha'));
 }
 function hideSignIn(force){ const f = $('#focus'); if (f.dataset.mode === 'reset' && !force) return; if (f.querySelector('#siGo')){ delete f.dataset.mode; f.classList.remove('open'); f.innerHTML = ''; } }
 
