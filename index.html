@@ -135,6 +135,21 @@ footer a{color:var(--muted);text-decoration:none}
 footer a:hover{color:var(--ink)}
 footer .spacer{flex:1}
 
+
+.install{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+.dev{background:var(--paper);border-radius:20px;padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.05);border:2px solid transparent;position:relative}
+.dev.mine{border-color:var(--accent)}
+.dev .you{display:none;position:absolute;top:18px;right:18px;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:3px 10px}
+.dev.mine .you{display:inline-block}
+.dev h3{margin:0 0 4px;font-size:19px;letter-spacing:-.01em}
+.dev .br{color:var(--faint);font-size:14px;margin:0 0 14px}
+.dev ol{margin:0;padding-left:20px;color:var(--muted);font-size:15.5px}
+.dev li{margin:6px 0;padding-left:2px}
+.dev li b{color:var(--ink);font-weight:600}
+.dev .alt{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:14px;color:var(--faint)}
+.kbd{display:inline-block;min-width:20px;text-align:center;border:1px solid var(--line);border-radius:6px;padding:0 5px;font-size:13px;color:var(--ink);background:var(--bg)}
+.install-note{margin-top:18px;color:var(--faint);font-size:14.5px}
+@media (max-width:860px){.install{grid-template-columns:1fr}}
 @media (max-width:860px){
   .steps{grid-template-columns:1fr}
   .principles{grid-template-columns:1fr}
@@ -153,6 +168,7 @@ footer .spacer{flex:1}
     <a class="logo" href="/"><img src="/app/icons/icon-192.png" alt="" width="30" height="30">Open Time</a>
     <span class="spacer"></span>
     <a class="nav-link hide-sm" href="#how">How it works</a>
+    <a class="nav-link hide-sm" href="#install">Install</a>
     <a class="nav-link hide-sm" href="/privacy/">Privacy</a>
     <a class="btn primary small" href="/app/" id="navOpen">Open the app</a>
   </header>
@@ -222,6 +238,49 @@ footer .spacer{flex:1}
       </div>
     </section>
 
+
+    <section id="install">
+      <p class="eyebrow">Install it</p>
+      <h2>Put it on your home screen.</h2>
+      <p class="sub">Open Time installs straight from your browser, no app store needed. You get an icon, a full-screen app, and it works offline.</p>
+      <div class="install">
+        <div class="dev" data-dev="ios">
+          <span class="you">Your device</span>
+          <h3>iPhone &amp; iPad</h3>
+          <p class="br">In Safari</p>
+          <ol>
+            <li>Open <b>opentime.work/app</b></li>
+            <li>Tap the <b>Share</b> button <span class="kbd" aria-hidden="true">⬆︎</span></li>
+            <li>Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b></li>
+          </ol>
+          <p class="alt">Using Chrome on iPhone? Tap <b>Share</b> in the address bar, then <b>Add to Home Screen</b>.</p>
+        </div>
+        <div class="dev" data-dev="android">
+          <span class="you">Your device</span>
+          <h3>Android</h3>
+          <p class="br">In Chrome</p>
+          <ol>
+            <li>Open <b>opentime.work/app</b></li>
+            <li>Tap the menu <span class="kbd" aria-hidden="true">⋮</span> at the top right</li>
+            <li>Tap <b>Install app</b> (or <b>Add to Home screen</b>), then <b>Install</b></li>
+          </ol>
+          <p class="alt">Chrome may also offer an <b>Install</b> banner at the bottom of the screen.</p>
+        </div>
+        <div class="dev" data-dev="desktop">
+          <span class="you">Your device</span>
+          <h3>Mac &amp; PC</h3>
+          <p class="br">In Chrome, Edge or Safari</p>
+          <ol>
+            <li>Open <b>opentime.work/app</b></li>
+            <li><b>Chrome or Edge:</b> click the install icon at the right end of the address bar, then <b>Install</b></li>
+            <li><b>Safari on Mac:</b> choose <b>File → Add to Dock</b></li>
+          </ol>
+          <p class="alt">Once it's installed, right-click its icon to keep it in your Dock or taskbar.</p>
+        </div>
+      </div>
+      <p class="install-note">Signed in on one device? Sign in with the same email on the others and everything syncs.</p>
+    </section>
+
     <section>
       <div class="privacy">
         <div>
@@ -263,6 +322,18 @@ footer .spacer{flex:1}
     if (known) {
       document.getElementById('heroOpen').textContent = 'Open your Open Time';
       document.getElementById('heroFine').textContent = 'Welcome back.';
+    }
+  } catch (e) {}
+  // highlight the install steps for this device
+  try {
+    var ua = navigator.userAgent || '';
+    var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var dev = isIOS ? 'ios' : /Android/i.test(ua) ? 'android' : 'desktop';
+    var el = document.querySelector('.dev[data-dev="' + dev + '"]');
+    if (el) {
+      el.classList.add('mine');
+      var grid = el.parentNode;
+      if (window.matchMedia('(max-width: 860px)').matches) grid.insertBefore(el, grid.firstChild);
     }
   } catch (e) {}
   if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(function(rs){
